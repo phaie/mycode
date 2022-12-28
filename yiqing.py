@@ -13,43 +13,40 @@ option.add_argument("--headless")  # 隐藏浏览器
 browser = Firefox(executable_path='geckodriver',options=option)
 url = "http://www.nhc.gov.cn/xcs/yqtb/list_gzbd.shtml"
 browser.get(url)
-time.sleep(5)   #火狐需要人为等待，设置等待时间为5s
+time.sleep(5)   
 # print(browser.page_source)     #查看源码
 c=0
 df=pd.DataFrame()
-#new_url = browser.find_element(By.CSS_SELECTOR,"li a").get_attribute('href')   #以一个为例
+#new_url = browser.find_element(By.CSS_SELECTOR,"li a").get_attribute('href')   
 def meigeurl(new_url):
     browser.get(new_url)
     time.sleep(3)
     news = browser.page_source.replace('</font>','')
 
-    #news = str(bs(news,"lxml")) #html.parser 是一个固定的值，是一个解析器
+    #news = str(bs(news,"lxml")) 
 
-    # print(news)   #每页全部信息
     ch_all_dict = {}
     all_dict = {}
     gat_dict = {}   #港澳台
-    #group(0)代表匹配的整句话
-
 
     '''我国31个省（自治区、直辖市）和新疆生产建设兵团（不包括港澳台）'''
     all_dict['pub_time'] = re.search('截至(.*?)24时',news).group(1)   #group(1)代表括号里的内容
     #time = re.search('截至(.*?)24时',news).group(1)
-    #累计确诊（tx已有）
+    #累计确诊
     all_dict['confirm_all'] = re.search('据31个省（自治区、直辖市）和新疆生产建设兵团.*?累计报告确诊病例(.*?)例.*?，',news).group(1)
     #现有确诊
     all_dict['confirm_now'] = re.search('据31个省（自治区、直辖市）和新疆生产建设兵团报告，现有确诊病例(.*?)例.*?，',news).group(1)
     #新增确诊
     all_dict['confirm_add'] = re.search('31个省（自治区、直辖市）和新疆生产建设兵团报告新增确诊病例(.*?)例。',news).group(1)
-    #现有疑似（tx已有）
+    #现有疑似
     all_dict['suspect_now'] = re.search('据31个省（自治区、直辖市）和新疆生产建设兵团.*?现有疑似病例(.*?)(例|\u3002)',news).group(1)
     #新增疑似
     all_dict['suspect_add'] = re.search('31个省（自治区、直辖市）和新疆生产建设兵团报告新增确诊病例.*?新增疑似病例(.*?)(例|\u3002)',news).group(1)
-    #累计死亡（tx已有）
+    #累计死亡
     all_dict['dead_all'] = re.search('据31个省（自治区、直辖市）和新疆生产建设兵团.*?累计死亡病例(.*?)例',news).group(1)
     #新增死亡
     all_dict['dead_add'] = re.search('31个省（自治区、直辖市）和新疆生产建设兵团报告新增确诊病例.*?新增死亡病例(.*?)',news).group(1)  #???
-    #累计治愈（tx已有）
+    #累计治愈
     all_dict['heal_all'] = re.search('据31个省（自治区、直辖市）和新疆生产建设兵团.*?累计治愈出院病例(.*?)例',news).group(1)
     #新增治愈
     all_dict['heal_new'] = re.search('当日新增治愈出院病例(.*?)例',news).group(1)
@@ -113,7 +110,7 @@ def meigeurl(new_url):
     ch_all_dict['ch_dead_all'] = int(all_dict['dead_all']) + int(gat_dict['got_dead_all'])
     # for k,v in ch_all_dict.items():
     #     print(k,v)
-    df=pd.DataFrame(all_dict,index=[0])
+    df=pd.DataFrame(all_dict,index=[0])#只存储all_dict
     return df
 #全部连接
 alls = browser.find_elements(By.CSS_SELECTOR,"li a")
@@ -121,7 +118,7 @@ allurl=[]
 for i in alls:
     urlnew=i.get_attribute('href')   
     allurl.append(urlnew)
-#meigeurl(urlnew)
+
 for i in allurl:
     print(i)
     df=pd.concat([df,meigeurl(i)],ignore_index=True)
