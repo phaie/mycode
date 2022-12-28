@@ -101,7 +101,7 @@ browser.quit()
 
 # In[193]:
 
-
+'''
 browser.get('http://www.nhc.gov.cn/xcs/yqtb/202202/be4b2a0a70494c43863407ad17816f63.shtml')
 time.sleep(5)
 news = browser.page_source
@@ -109,7 +109,7 @@ news = str(bs(news,"lxml").find_all(class_="con"))
 h=re.compile('<.*?>')
 news=h.sub('',news).split('\n\n\n')[0].strip('[\n')
 news
-
+'''
 
 # In[ ]:
 
